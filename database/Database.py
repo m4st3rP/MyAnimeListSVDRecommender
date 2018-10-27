@@ -1,48 +1,59 @@
 from peewee import *
 
-users_db = PostgresqlDatabase('users.db')  # db with user id (key) and user name
-anime_db = PostgresqlDatabase('anime.db')  # db with anime id (key) and anime name
-genre_db = PostgresqlDatabase('genre.db')  # db with genre id (key) and genre name
-anime_score_db = PostgresqlDatabase('anime_score.db')  # db with anime id (FK, key), user id (FK, key) and score
-anime_genre_db = PostgresqlDatabase('anime_genre.db')  # db with anime id (FK, key) and genre id (FK, key)
+
+db = PostgresqlDatabase('database.db')
 
 
 class User(Model):
-    id = IntegerField()
+    id = IntegerField()  # key
     name = CharField()
 
     class Meta:
-        database = users_db
+        database = db
 
 
 class Anime(Model):
-    id = IntegerField()
+    id = IntegerField()  # key
     name = CharField()
 
     class Meta:
-        database = anime_db
+        database = db
 
 
 class Genre(Model):
-    id = IntegerField()
+    id = IntegerField()  # key
     name = CharField()
 
     class Meta:
-        database = genre_db
+        database = db
 
 
 class AnimeScore(Model):
-    anime_id = ForeignKeyField(Anime, backref='id')
-    user_id = ForeignKeyField(User, backref='id')
+    anime_id = ForeignKeyField(Anime, backref='id')  # key
+    user_id = ForeignKeyField(User, backref='id')  # key
     score = IntegerField()
 
     class Meta:
-        databse: anime_score_db
+        databse: db
 
 
 class AnimeGenre(Model):
-    anime_id = ForeignKeyField(Anime, backref='id')
-    genre_id = ForeignKeyField(Genre, backref='id')
+    anime_id = ForeignKeyField(Anime, backref='id')  # key
+    genre_id = ForeignKeyField(Genre, backref='id')  # key
 
     class Meta:
-        databse: anime_genre_db
+        databse: db
+
+
+def initialize_dbs():
+    db.connect()
+    db.create_tables([User, Anime, Genre, AnimeScore, AnimeGenre])
+
+
+def test():
+    initialize_dbs()
+    test_user = User(id=1, name="Hans Peter")
+    print(test_user.save())
+    for user in User.select():
+        print(user.id + user.name)
+    test_user.delete_instance()
