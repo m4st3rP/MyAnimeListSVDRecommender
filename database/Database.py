@@ -1,7 +1,9 @@
 from peewee import *
+import psycopg2
 
 
-db = PostgresqlDatabase('database.db')
+db = PostgresqlDatabase('database.db', user='postgres', password='abc', host='127.0.0.1')
+conn = psycopg2.connect(database="database", user="postgres", password="abc")
 
 
 class User(Model):
@@ -34,7 +36,7 @@ class AnimeScore(Model):
     score = IntegerField()
 
     class Meta:
-        databse: db
+        database = db
 
 
 class AnimeGenre(Model):
@@ -42,18 +44,21 @@ class AnimeGenre(Model):
     genre_id = ForeignKeyField(Genre, backref='id')  # key
 
     class Meta:
-        databse: db
+        database = db
 
 
-def initialize_dbs():
+def initialize_db():
     db.connect()
     db.create_tables([User, Anime, Genre, AnimeScore, AnimeGenre])
 
 
 def test():
-    initialize_dbs()
+    initialize_db()
     test_user = User(id=1, name="Hans Peter")
+    test_user2 = User(id=2, name="Manfred Meisel")
     print(test_user.save())
+    print(test_user2.save())
     for user in User.select():
-        print(user.id + user.name)
+        print(user.id + " " + user.name)
     test_user.delete_instance()
+    test_user2.delete_instance()
