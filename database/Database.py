@@ -7,8 +7,8 @@ conn = psycopg2.connect(database="database", user="postgres", password="abc")
 
 
 class User(Model):
-    id = IntegerField()  # key
-    name = CharField()
+    id = IntegerField()
+    name = CharField()  # key
 
     class Meta:
         database = db
@@ -32,7 +32,7 @@ class Genre(Model):
 
 class AnimeScore(Model):
     anime_id = ForeignKeyField(Anime, backref='id')  # key
-    user_id = ForeignKeyField(User, backref='id')  # key
+    user_name = ForeignKeyField(User, backref='name')  # key
     score = IntegerField()
 
     class Meta:
